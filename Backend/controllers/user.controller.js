@@ -12,6 +12,12 @@ module.exports.registerUser = async (req, res, next) => {
 
     const { fullname, email, password } = req.body;
 
+    const isUserAlreadyExist = await userModel.findOne({ email });
+
+    if (isUserAlreadyExist) {
+      return res.status(400).json({ message: "User already exist" });
+    }
+
     const hashedPassword = await userModel.hashPassword(password);
     const user = await userService.createUser({
       firstname: fullname.firstname,
@@ -19,7 +25,7 @@ module.exports.registerUser = async (req, res, next) => {
       email,
       password: hashedPassword,
     });
-
+console.log(user)
     const token = user.generateAuthToken();
 
     // Creating a shallow copy of the user's raw document data (_doc) from Mongoose,
@@ -48,7 +54,7 @@ module.exports.loginUser = async (req, res, next) => {
     const user = await userModel.findOne({ email }).select("+password");
 
     if (!user) {
-     return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const isMatch = await user.comparePassword(password);
@@ -81,9 +87,9 @@ module.exports.logoutUser = async (req, res, next) => {
 
     const token = req.cookies.token || req.headers.authorization.split(" ")[1];
 
-    await blacklistTokenModel.create({token});
+    await blacklistTokenModel.create({ token });
 
-    res.status(200).json({message: "Logged out"})
+    res.status(200).json({ message: "Logged out" })
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

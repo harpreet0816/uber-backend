@@ -5,7 +5,9 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const app = express();
 const connectToDb = require('./db/db');
-const userRoutes = require('./routes/user.routes.js')
+const userRoutes = require('./routes/user.routes.js');
+const captainRoutes = require('./routes/captain.routes.js');
+
 connectToDb();
 // const port = process.env.PORT || 3000;
 app.use(cors());
@@ -18,7 +20,6 @@ app.get('/', (req, res) => {
 });
 
 app.use('/users', userRoutes);
-// app.listen(port, ()=>{
-//         console.log(`server is running on port: ${port}`)
-//     })
+app.use('/captains', captainRoutes);
+
 module.exports = app;

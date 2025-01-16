@@ -1,6 +1,22 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const UserLogin = () => {
+const UserLogin = () => {  
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState("");
+  const [userData, setUserData] = useState({});
+  
+  const submitHandler = (e) => {
+      e.preventDefault();
+      setUserData((prev) => {
+        return { ...prev, email , password }; 
+      })
+      console.log("done", userData);
+      setEmail("");
+      setPassword("")
+  }
+
   return (
     <div className="p-7 h-screen flex flex-col justify-between">
       <div>
@@ -9,10 +25,14 @@ const UserLogin = () => {
         src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Uber_logo_2018.svg/2560px-Uber_logo_2018.svg.png"
         alt="no img"
       />
-      <form action="">
+      <form onSubmit={submitHandler}>
         <h3 className="text-lg font-medium mb-2">What&apos;s your email?</h3>
         <input
           type="email"
+          value={email}
+          onChange={(e)=>{
+            setEmail(e.target.value)
+          }}
           className="bg-[#eeee] mb-7 rounded px-4 py-2 border w-full text-lg placeholder:text-base focus:outline-gray-400"
           name="email"
           placeholder="email@example.com"
@@ -21,6 +41,10 @@ const UserLogin = () => {
         <h3 className="text-lg font-medium mb-2">Enter Password</h3>
         <input
           type="password"
+          value={password}
+          onChange={(e)=>{
+            setPassword(e.target.value);
+          }}  
           className="bg-[#eeee] mb-7 rounded px-4 py-2 border w-full text-lg placeholder:text-base focus:outline-gray-400"
           name="password"
           placeholder="password"
@@ -33,9 +57,9 @@ const UserLogin = () => {
         <p className="text-center">New here? <Link to="/signup" className="text-blue-600">Create new Account</Link></p>
       </div>
       <div>
-      <button className="bg-[#10b461] mb-7 text-white font-semibold rounded px-4 py-2 w-full text-lg placeholder:text-base focus:outline-none">
+      <Link to="/captain-login" className="bg-[#10b461] flex items-center justify-center mb-7 text-white font-semibold rounded px-4 py-2 w-full text-lg placeholder:text-base focus:outline-none">
           Sign in as Captain
-        </button>
+        </Link>
       </div>
     </div>
   );

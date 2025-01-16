@@ -25,7 +25,7 @@ module.exports.registerUser = async (req, res, next) => {
       email,
       password: hashedPassword,
     });
-console.log(user)
+    
     const token = user.generateAuthToken();
 
     // Creating a shallow copy of the user's raw document data (_doc) from Mongoose,

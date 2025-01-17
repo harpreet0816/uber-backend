@@ -41,6 +41,7 @@ const UserLogin = () => {
         <h3 className="text-lg font-medium mb-2">Enter Password</h3>
         <input
           type="password"
+          autoComplete="false"
           value={password}
           onChange={(e)=>{
             setPassword(e.target.value);

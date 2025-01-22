@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const rideModel = require("../Models/ride.model.js");
 const mapService = require("./maps.service.js");
 
@@ -6,7 +7,40 @@ async function getFare (pickup, destination) {
         throw new Error("Pickup and destination are reqruired");
     }
 
-    const distanceTime = await mapService.getDistanceTime(pickup, destination);
+    
+    let pickupLatLong, destinationLatLong;
+    const googleApiExist =
+    process.env.GOOGLE_MAPS_API !== "null" &&
+    process.env.GOOGLE_MAPS_API !== "";
+
+    let distanceTime
+    if(googleApiExist){
+        distanceTime = await mapService.getDistanceTime(pickup, destination);
+
+    }else{
+        if (isLatLong(pickup)) {
+            pickupLatLong = pickup;
+        } else {
+            pickupLatLong = await getLatLongFromAddress(pickup); 
+            if (!pickupLatLong) {
+                throw new Error("Invalid pickup address");
+            }
+        }
+    
+        // Check if destination is in lat-long, if not, fetch lat-long
+        if (isLatLong(destination)) {
+            destinationLatLong = destination;
+        } else {
+            destinationLatLong = await getLatLongFromAddress(destination); 
+            if (!destinationLatLong) {
+                throw new Error("Invalid destination address");
+            }
+        }
+
+        distanceTime = await mapService.getDistanceTime(pickupLatLong, destinationLatLong);
+    }
+
+
 
     const baseFare = {
         auto: 30, 
@@ -38,10 +72,28 @@ async function getFare (pickup, destination) {
 }
 
 function getOtp(num) {
+    // const min = Math.pow(10, num - 1);
+    //const max = Math.pow(10, num);
+    //const otp = Math.floor(Math.random() * (max - min) + min);
+    //return otp.toString();
     const otp = crypto.randomInt(Math.pow(10, num - 1), Math.pow(10, num)).toString();
     return otp;
 }
 
+
+const isLatLong = (value) => {
+    const latLongPattern = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/;
+    return latLongPattern.test(value);
+};
+
+const getLatLongFromAddress = async (address) => {
+    try {
+        const result = await mapService.getAddressCoordinate(address);
+        return `${result.ltd},${result.lng}`
+    } catch (error) {
+        throw new Error(error);
+    }
+}
 module.exports.createRide = async ({user, pickup, destination, vehicleType}) => {
 
     if(!user || !pickup || !destination || !vehicleType){

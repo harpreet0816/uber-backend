@@ -32,7 +32,7 @@ const Home = () => {
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [activeField, setActiveField] = useState(null);
-  const [fare, setFare] = useState({});
+  const [fare, setFare] = useState({car:"0",moto: "0", auto: "0"});
   const [vehicleType, setVehicleType] = useState(null);
   const [ride, setRide] = useState(null);
 
@@ -88,8 +88,32 @@ const Home = () => {
     }
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
+    if(pickup.trim() && destination.trim()){
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
+          { 
+              pickup: pickupLatLon, 
+              destination: destinationpLatLon 
+          },
+          { 
+              headers: { 
+                  Authorization: `Bearer ${localStorage.getItem("token")}` 
+              } 
+          }
+        );
+        console.log(response, "Fsf")
+        if(response.status === 200){
+          setPanelOpen(false);
+          setVehiclePanelOpen(true);
+          setFare(response.data);
+        }
+      } catch (error) {
+        console.error(error.message);
+      }
+    }
   };
 
   useEffect(() => {
@@ -232,6 +256,7 @@ const Home = () => {
               }}
               placeholder="Enter your destination"
             />
+            <button className={`bg-[#111] mt-3 text-white font-semibold rounded px-2 py-1 w-full text-lg placeholder:text-base focus:outline-none ${pickup && destination ? 'opacity-[1]' : 'opacity-[0.5]'}`}>Find a trip</button>
           </form>
         </div>
         <div ref={panelRef} className="h-0 bg-white">
@@ -258,6 +283,7 @@ const Home = () => {
         <VehiclePanel
           setConfirmRidePanelOpen={setConfirmRidePanelOpen}
           setVehiclePanelOpen={setVehiclePanelOpen}
+          fare={fare}
         />
       </div>
       <div

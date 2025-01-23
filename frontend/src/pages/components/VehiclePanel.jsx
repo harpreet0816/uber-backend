@@ -1,6 +1,6 @@
 import "remixicon/fonts/remixicon.css";
 
-const VehiclePanel = ({ setVehiclePanelOpen,        setConfirmRidePanelOpen }) => {
+const VehiclePanel = ({ setVehiclePanelOpen, setConfirmRidePanelOpen, fare }) => {
   return (
     <div>
       <h5
@@ -30,7 +30,7 @@ const VehiclePanel = ({ setVehiclePanelOpen,        setConfirmRidePanelOpen }) =
             Affordable, compact rides
           </p>
         </div>
-        <h2 className="text-lg font-semibold">₹193.20</h2>
+        <h2 className="text-lg font-semibold">{`₹${fare?.car ? fare.car : "0"}`}</h2>
       </div>
       <div onClick={()=>{setConfirmRidePanelOpen(true)}} className="flex w-full items-center  justify-between border active:border-black rounded-xl p-3 mb-2">
         <img
@@ -50,7 +50,7 @@ const VehiclePanel = ({ setVehiclePanelOpen,        setConfirmRidePanelOpen }) =
             Affordable, motorcycle rides
           </p>
         </div>
-        <h2 className="text-lg font-semibold">₹65.00</h2>
+        <h2 className="text-lg font-semibold">{`₹${fare?.moto ? fare.moto : "0"}`}</h2>
       </div>
       <div onClick={()=>{setConfirmRidePanelOpen(true)}} className="flex w-full items-center  justify-between border active:border-black rounded-xl p-3 mb-2">
         <img
@@ -70,7 +70,7 @@ const VehiclePanel = ({ setVehiclePanelOpen,        setConfirmRidePanelOpen }) =
             Affordable, Auto rides
           </p>
         </div>
-        <h2 className="text-lg font-semibold">₹118.86</h2>
+        <h2 className="text-lg font-semibold">{`₹${fare.auto ? fare.auto : "0"}`}</h2>
       </div>
     </div>
   );

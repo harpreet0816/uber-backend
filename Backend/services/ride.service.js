@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const rideModel = require("../Models/ride.model.js");
 const mapService = require("./maps.service.js");
 
-async function getFare (pickup, destination) {
+async function getFare ({pickup, destination}) {
     if(!pickup || !destination){
         throw new Error("Pickup and destination are reqruired");
     }
@@ -61,15 +61,17 @@ async function getFare (pickup, destination) {
     }
 
     const fare = {
-        "auto": baseFare.auto + ((distanceTime.distance.value/1000) * perKmRate.auto) + ((distanceTime.duration.value/60) * perMinuteRate.auto),
+        "auto": (baseFare.auto + ((distanceTime.distance.value/1000) * perKmRate.auto) + ((distanceTime.duration.value/60) * perMinuteRate.auto)).toFixed(2),
 
-        "car": baseFare.car + ((distanceTime.distance.value/1000) * perKmRate.car) + ((distanceTime.duration.value/60) * perMinuteRate.car),
+        "car": (baseFare.car + ((distanceTime.distance.value/1000) * perKmRate.car) + ((distanceTime.duration.value/60) * perMinuteRate.car)).toFixed(2),
 
-        "moto": baseFare.moto + ((distanceTime.distance.value/1000) * perKmRate.moto) + ((distanceTime.duration.value/60) * perMinuteRate.moto),
+        "moto": (baseFare.moto + ((distanceTime.distance.value/1000) * perKmRate.moto) + ((distanceTime.duration.value/60) * perMinuteRate.moto)).toFixed(2),
     }
 
     return fare;
 }
+
+module.exports.getFare = getFare;
 
 function getOtp(num) {
     // const min = Math.pow(10, num - 1);

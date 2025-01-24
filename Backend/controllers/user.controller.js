@@ -75,7 +75,7 @@ module.exports.loginUser = async (req, res, next) => {
 
 module.exports.getUserProfile = async (req, res, next) => {
   try {
-    res.status(200).json(req.user)
+    res.status(200).json({user: req.user})
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

@@ -102,7 +102,7 @@ module.exports.createRide = async ({user, pickup, destination, vehicleType}) => 
         throw new Error("All feilds are required");
     }
 
-    const fare = await getFare(pickup, destination);
+    const fare = await getFare({pickup: pickup.split(":")[1], destination: destination.split(":")[1]});
 
     const ride = await rideModel.create({
         user,

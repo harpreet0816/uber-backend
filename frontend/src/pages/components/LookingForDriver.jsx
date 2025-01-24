@@ -1,4 +1,5 @@
-const LookingForDriver = ({setVehicleFound}) => {
+import { images } from "../../assets/images"; 
+const LookingForDriver = ({setVehicleFound, pickup, destination, fare, vehicleType}) => {
   return (
     <div>
       <h5
@@ -13,7 +14,10 @@ const LookingForDriver = ({setVehicleFound}) => {
       <div className="flex gap-2 flex-col justify-between items-center">
         <img
           className="h-20"
-          src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg"
+          src={
+            vehicleType
+              ? images[vehicleType] : "https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" 
+          }
           alt="confirm ride vehicle"
         />
         <div className="w-full">
@@ -22,9 +26,9 @@ const LookingForDriver = ({setVehicleFound}) => {
               <i className="text-lg ri-map-pin-fill"></i>
             </h2>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
+              <h3 className="text-lg font-medium">{pickup ? pickup.split(" ")[0] : "562/11-A"}</h3>
               <p className="text-sm -mt-1 text-gray-600">
-                Kankariya Talab, Bhopal
+              {pickup ? pickup : ""}
               </p>
             </div>
           </div>
@@ -33,9 +37,9 @@ const LookingForDriver = ({setVehicleFound}) => {
               <i className="text-lg ri-map-pin-2-fill"></i>
             </h2>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
+              <h3 className="text-lg font-medium">{destination ? destination.split(" ")[0] : "562/11-A"}</h3>
               <p className="text-sm -mt-1 text-gray-600">
-                Kankariya Talab, Bhopal
+              {destination ? destination : ""}
               </p>
             </div>
           </div>
@@ -44,7 +48,7 @@ const LookingForDriver = ({setVehicleFound}) => {
               <i className="text-lg ri-currency-line"></i>
             </h2>
             <div>
-              <h3 className="text-lg font-medium">₹193.20</h3>
+              <h3 className="text-lg font-medium">₹{Object.keys(fare).length > 0 ? fare[vehicleType] : ""}</h3>
               <p className="text-sm -mt-1 text-gray-600">Cash Cash</p>
             </div>
           </div>

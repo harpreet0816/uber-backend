@@ -43,6 +43,11 @@ const Home = () => {
   const vehicleFoundRef = useRef(null);
   const waitingForDriverRef = useRef(null);
 
+  
+  useEffect(() => {
+    console.log(pickupLatLon, "--", destinationpLatLon)
+  }, [pickupLatLon, destinationpLatLon])
+
   const debouncedFetchSuggestions = debounce(async (query) => {
     try {
       const response = await axios.get(
@@ -88,7 +93,7 @@ const Home = () => {
     }
   };
 
-  const submitHandler = async (e) => {
+  const submitHandlerGetFare = async (e) => {
     e.preventDefault();
     if(pickup.trim() && destination.trim()){
       try {
@@ -116,10 +121,29 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(pickupLatLon, "--", destinationpLatLon)
-  }, [pickupLatLon, destinationpLatLon])
-  
+  const createRideHandler = async () => {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, 
+        {
+          pickup: `${pickup} :${pickupLatLon}`,
+          destination: `${destination} :${destinationpLatLon}`,
+          vehicleType: vehicleType
+        }, 
+        {
+          headers: { 
+          Authorization:`Bearer ${localStorage.getItem("token")}`
+         }
+      })
+
+      if(response.status === 200){
+        console.log(response.data)
+      }else{
+        throw new Error("Create ride api fails");
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
   useGSAP(
     function () {
       if (panelOpen) {
@@ -232,7 +256,7 @@ const Home = () => {
             <i className="ri-arrow-down-wide-line"></i>
           </h5>
           <h4 className="text-2xl font-semibold">Find a trip</h4>
-          <form onSubmit={submitHandler}>
+          <form onSubmit={submitHandlerGetFare}>
             <div className="line absolute h-16 w-1 top-[45%] left-10 bg-gray-700 rounded-full"></div>
             <input
               className="bg-[#eee] px-12 py-2 text-base rounded-lg w-full mt-5"
@@ -259,7 +283,7 @@ const Home = () => {
             <button className={`bg-[#111] mt-3 text-white font-semibold rounded px-2 py-1 w-full text-lg placeholder:text-base focus:outline-none ${pickup && destination ? 'opacity-[1]' : 'opacity-[0.5]'}`}>Find a trip</button>
           </form>
         </div>
-        <div ref={panelRef} className="h-0 bg-white">
+        <div ref={panelRef} className="location-panel h-0 bg-white">
           <LocationSearchPanel
             suggestions={
               activeField === "pickup"
@@ -278,32 +302,42 @@ const Home = () => {
       </div>
       <div
         ref={vehiclePanelRef}
-        className="fixed z-10 w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full"
+        className="vehicle-panel fixed z-10 w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full"
       >
         <VehiclePanel
           setConfirmRidePanelOpen={setConfirmRidePanelOpen}
           setVehiclePanelOpen={setVehiclePanelOpen}
           fare={fare}
+          setVehicleType={setVehicleType}
         />
       </div>
       <div
         ref={confirmRidePanelRef}
-        className="fixed z-10 w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full"
+        className="confirm-panel fixed z-10 w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full"
       >
         <ConfirmRide
           setConfirmRidePanelOpen={setConfirmRidePanelOpen}
           setVehicleFound={setVehicleFound}
+          pickup={pickup}
+          destination={destination}
+          fare={fare}
+          vehicleType={vehicleType}
+          createRideHandler={createRideHandler}
         />
       </div>
       <div
         ref={vehicleFoundRef}
-        className="fixed z-10 w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full"
+        className="looking-driver fixed z-10 w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full"
       >
-        <LookingForDriver setVehicleFound={setVehicleFound} />
+        <LookingForDriver setVehicleFound={setVehicleFound}
+          pickup={pickup}
+          destination={destination}
+          fare={fare}
+          vehicleType={vehicleType} />
       </div>
       <div
         ref={waitingForDriverRef}
-        className="fixed z-10 w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full"
+        className="waiting-driver fixed z-10 w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full"
       >
         <WaitingForDriver setWaitingForDriver={setWaitingForDriver} />
       </div>

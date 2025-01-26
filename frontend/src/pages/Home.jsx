@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -8,6 +8,9 @@ import VehiclePanel from "./components/VehiclePanel";
 import ConfirmRide from "./components/ConfirmRide";
 import WaitingForDriver from "./components/WaitingForDriver";
 import LookingForDriver from "./components/LookingForDriver";
+import { SocketContext } from "../context/SocketContext";
+import { userDataContext } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 let timeoutId;
 function debounce(cb, delay) {
@@ -43,10 +46,28 @@ const Home = () => {
   const vehicleFoundRef = useRef(null);
   const waitingForDriverRef = useRef(null);
 
+  const { socket } = useContext(SocketContext)
+  const { user } = useContext(userDataContext)
   
+  const navigate = useNavigate();
+
   useEffect(() => {
-    console.log(pickupLatLon, "--", destinationpLatLon)
-  }, [pickupLatLon, destinationpLatLon])
+    socket.emit("join", { userType: "user", userId: user._id })
+  }, [ user ])
+
+  socket.on('ride-confirmed', ride => {
+
+
+    setVehicleFound(false)
+    setWaitingForDriver(true)
+    setRide(ride)
+})
+
+socket.on('ride-started', ride => {
+    console.log("ride")
+    setWaitingForDriver(false)
+    navigate('/riding', { state: { ride } }) // Updated navigate to include ride data
+})
 
   const debouncedFetchSuggestions = debounce(async (query) => {
     try {
@@ -100,8 +121,8 @@ const Home = () => {
         const response = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
           { 
-              pickup: pickupLatLon, 
-              destination: destinationpLatLon 
+              pickup: pickup + ":" +pickupLatLon, 
+              destination: destination + ":" + destinationpLatLon 
           },
           { 
               headers: { 
@@ -109,7 +130,6 @@ const Home = () => {
               } 
           }
         );
-        console.log(response, "Fsf")
         if(response.status === 200){
           setPanelOpen(false);
           setVehiclePanelOpen(true);

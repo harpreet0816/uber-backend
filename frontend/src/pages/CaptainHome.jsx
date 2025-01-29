@@ -28,10 +28,12 @@ const CaptainHome = () => {
     const updateLocation = () => {
       if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(position => {
+          console.log(position, "---")
           socket.emit("update-location-captain", {
+            userId: captain._id,
             location : {
               ltd: position.coords.latitude,
-              lng: position.coords.latitude
+              lng: position.coords.longitude
             }
           })
         })
@@ -41,6 +43,10 @@ const CaptainHome = () => {
     const locationInterval = setInterval(updateLocation, 10000)
     updateLocation()
 
+    socket.on("new-ride", (data) => {
+      setRide(data);
+      setRidePopupPanel(true);
+    })
     return () => clearInterval(locationInterval)
   }, []);
 
@@ -99,11 +105,11 @@ const CaptainHome = () => {
         <CaptainDetails />
       </div>
       <div ref={ridePopupPanelRef} className="fixed z-10 w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full">
-           <RidePopup  setRidePopupPanel={setRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel}/>
+           <RidePopup  setRidePopupPanel={setRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} ride={ride} setRide={setRide}/>
       </div>
       <div ref={confirmRidePopupPanelRef} className="fixed z-10 h-screen w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full">
            <ConfirmRideCaptainPopup  
-           setRidePopupPanel={setRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel}/>
+           setRidePopupPanel={setRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} ride={ride} setRide={setRide} />
       </div>
     </div>
   );

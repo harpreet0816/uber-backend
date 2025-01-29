@@ -13,7 +13,8 @@ const LocationSearchPanel = ({ suggestions, setVehiclePanelOpen, setPanelOpen, s
       setPickup(suggestion.display_address)
       setPickupLatLon(`${suggestion.lat},${suggestion.lon}`)
     } else if (activeField === 'destination') {
-      setDestination(suggestion.display_address)
+      setDestination(suggestion.display_address);
+      console.log(suggestion, "Fs")
       setDestinationpLatLon(`${suggestion.lat},${suggestion.lon}`)
     }
   }

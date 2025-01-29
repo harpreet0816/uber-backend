@@ -1,6 +1,6 @@
 const socketIo = require('socket.io');
-const userModel = require('./Models/user.model.js');
-const captainModel = require('./Models/captain.model.js');
+const userModel = require('./models/user.model.js');
+const captainModel = require('./models/captain.model.js');
 
 let io;
 
@@ -27,12 +27,19 @@ function initializeSocket (server){
 
         socket.on("update-location-captain", async (data) => {
             const { userId, location } = data;
-            await captainModel.findByIdAndUpdate(userId, {
-                location: {
-                    ltd: location.ltd,
-                    lng: location.lng
-                }
-            }) 
+            location.ltd = parseFloat(location.ltd.toFixed(7));
+            location.lng = parseFloat(location.lng.toFixed(7));
+            try {
+                await captainModel.findByIdAndUpdate(userId, {
+                    location: {
+                        type: "Point", // GeoJSON type
+                        coordinates: [location.lng, location.ltd], // Corrected to "lat" for latitude
+                    },
+                });
+                console.log("Location updated successfully for captain:", userId);
+            } catch (err) {
+                console.error("Error updating location:", err.message);
+            }
         })
 
         socket.on('disconnect', () => {

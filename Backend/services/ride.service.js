@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const rideModel = require("../Models/ride.model.js");
+const rideModel = require("../models/ride.model.js");
 const mapService = require("./maps.service.js");
 
 async function getFare ({pickup, destination}) {
@@ -36,7 +36,6 @@ async function getFare ({pickup, destination}) {
                 throw new Error("Invalid destination address");
             }
         }
-
         distanceTime = await mapService.getDistanceTime(pickupLatLong, destinationLatLong);
     }
 
@@ -67,7 +66,6 @@ async function getFare ({pickup, destination}) {
 
         "moto": (baseFare.moto + ((distanceTime.distance.value/1000) * perKmRate.moto) + ((distanceTime.duration.value/60) * perMinuteRate.moto)).toFixed(2),
     }
-
     return fare;
 }
 
@@ -96,18 +94,18 @@ const getLatLongFromAddress = async (address) => {
         throw new Error(error);
     }
 }
-module.exports.createRide = async ({user, pickup, destination, vehicleType}) => {
+ module.exports.createRide = async ({user, pickup, destination, vehicleType, fullPickup, fullDestination}) => {
 
     if(!user || !pickup || !destination || !vehicleType){
         throw new Error("All feilds are required");
     }
 
-    const fare = await getFare({pickup: pickup.split(":")[1], destination: destination.split(":")[1]});
+    const fare = await getFare({pickup, destination});
 
     const ride = await rideModel.create({
         user,
-        pickup, 
-        destination,
+        pickup: fullPickup, 
+        destination: fullDestination,
         fare: fare[vehicleType],
         otp: getOtp(6)
     })

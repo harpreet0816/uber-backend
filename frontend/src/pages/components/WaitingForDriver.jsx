@@ -1,5 +1,5 @@
 
-const WaitingForDriver = ({setWaitingForDriver}) => {
+const WaitingForDriver = ({setWaitingForDriver, setRide, ride}) => {
   return (
     <div>
       <h5
@@ -17,9 +17,10 @@ const WaitingForDriver = ({setWaitingForDriver}) => {
       alt="confirm ride vehicle"
     />
     <div className="text-right">
-    <h2 className="text-lg font-medium">Sarthak</h2>
-    <h4 className="text-xl font-semibold -mt-1 -mb-1">MP04 AB 1234</h4>
-    <p className="text-sm text-gray-600">Maruti Suzuki Alto</p>
+    <h2 className="text-lg font-medium capitalize">{ride?.captain?.fullname?.firstname + " " + ride?.captain?.fullname?.lastname}</h2>
+    <h4 className="text-xl font-semibold -mt-1 -mb-1 capitalize">{ride?.captain?.vehicle?.plate}</h4>
+    <p className="text-sm text-gray-600">{ride?.captain?.vehicle?.vehicleType}</p>
+    <h4 className="text-xl font-semibold -mt-1 -mb-1 capitalize">OTP: {ride?.otp}</h4>
     </div>
       </div>
       <div className="flex gap-2 flex-col justify-between items-center">
@@ -29,9 +30,9 @@ const WaitingForDriver = ({setWaitingForDriver}) => {
               <i className="text-lg ri-map-pin-fill"></i>
             </h2>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
+              <h3 className="text-lg font-medium">{ride?.pickup ? ride?.pickup.split(" ")[0] : "562/11-A"}</h3>
               <p className="text-sm -mt-1 text-gray-600">
-                Kankariya Talab, Bhopal
+                {ride?.pickup}
               </p>
             </div>
           </div>
@@ -40,9 +41,9 @@ const WaitingForDriver = ({setWaitingForDriver}) => {
               <i className="text-lg ri-map-pin-2-fill"></i>
             </h2>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
+              <h3 className="text-lg font-medium">{ride?.destination ? ride?.destination.split(" ")[0] : "562/11-A"}</h3>
               <p className="text-sm -mt-1 text-gray-600">
-                Kankariya Talab, Bhopal
+              {ride?.destination}
               </p>
             </div>
           </div>
@@ -51,7 +52,7 @@ const WaitingForDriver = ({setWaitingForDriver}) => {
               <i className="text-lg ri-currency-line"></i>
             </h2>
             <div>
-              <h3 className="text-lg font-medium">₹193.20</h3>
+              <h3 className="text-lg font-medium">₹{ride?.fare}</h3>
               <p className="text-sm -mt-1 text-gray-600">Cash Cash</p>
             </div>
           </div>

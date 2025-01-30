@@ -5,13 +5,19 @@ const ConfirmRideCaptainPopup = ({
   setRidePopupPanel,
   setConfirmRidePopupPanel,
   ride, 
-  setRide
+  setRide,
+  startRide
 }) => {
 
   const [otp, setOtp] = useState("");
 
   const submitHandler = (e) => {
     e.preventDefault();
+    if(!otp || !parseInt(Math.abs(otp)) || otp.length != 6 ){
+      console.log(otp, "otp must be of 6 digits")
+      return;
+    }
+    startRide(otp)
   }
   if(!ride) {return (<div>loading...</div>)}
   return (
@@ -87,7 +93,7 @@ const ConfirmRideCaptainPopup = ({
               className="bg-[#eee] px-6 py-4 font-mono text-lg rounded-lg w-full"
             />
             <Link
-              to="/captain-riding"
+              onClick={submitHandler}
               className="flex justify-center w-full mt-5 bg-green-600 text-white text-lg font-semibold p-3 rounded-lg"
             >
               Confirm

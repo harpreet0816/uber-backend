@@ -36,7 +36,7 @@ function initializeSocket (server){
                         coordinates: [location.lng, location.ltd], // Corrected to "lat" for latitude
                     },
                 });
-                console.log("Location updated successfully for captain:", userId);
+                // console.log("Location updated successfully for captain:", userId);
             } catch (err) {
                 console.error("Error updating location:", err.message);
             }
@@ -50,8 +50,6 @@ function initializeSocket (server){
 }
 
 function sendMessageToSocketId (socketId, messageObject){
-    console.log(socketId, messageObject);
-
     if(io){
         io.to(socketId).emit(messageObject.event, messageObject.data);
     }else{

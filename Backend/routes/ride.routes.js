@@ -19,5 +19,18 @@ router.post("/get-fare",
     rideController.getFare
 )
 
+router.post("/accept-ride", 
+    authMiddleware.authCaptain,
+    body("rideId").isMongoId().withMessage("Invalid RideId"),
+    rideController.acceptRide
+)
+
+router.post("/start-ride", 
+    authMiddleware.authCaptain,
+    body("rideId").isMongoId().withMessage("Invalid RideId"),
+    body("otp").isString().isLength({min:6, max:6}).withMessage("Invalid otp"),
+    rideController.startRide
+)
+
 
 module.exports = router;

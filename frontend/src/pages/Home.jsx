@@ -35,7 +35,7 @@ const Home = () => {
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [activeField, setActiveField] = useState(null);
-  const [fare, setFare] = useState({car:"0",moto: "0", auto: "0"});
+  const [fare, setFare] = useState({ car: "0", moto: "0", auto: "0" });
   const [vehicleType, setVehicleType] = useState(null);
   const [ride, setRide] = useState(null);
 
@@ -46,28 +46,27 @@ const Home = () => {
   const vehicleFoundRef = useRef(null);
   const waitingForDriverRef = useRef(null);
 
-  const { socket } = useContext(SocketContext)
-  const { user } = useContext(userDataContext)
-  
+  const { socket } = useContext(SocketContext);
+  const { user } = useContext(userDataContext);
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    socket.emit("join", { userType: "user", userId: user._id })
-  }, [ user ])
+    socket.emit("join", { userType: "user", userId: user._id });
+  }, [user]);
 
-  socket.on('ride-confirmed', ride => {
+  socket.on("ride-confirmed", (ride) => {
+    setVehicleFound(false);
+    setVehiclePanelOpen(false);
+    setWaitingForDriver(true);
+    setRide(ride);
+  });
 
-
-    setVehicleFound(false)
-    setWaitingForDriver(true)
-    setRide(ride)
-})
-
-socket.on('ride-started', ride => {
-    console.log("ride")
-    setWaitingForDriver(false)
-    navigate('/riding', { state: { ride } }) // Updated navigate to include ride data
-})
+  socket.on("ride-started", (ride) => {
+    console.log("ride");
+    setWaitingForDriver(false);
+    navigate("/riding", { state: { ride } }); // Updated navigate to include ride data
+  });
 
   const debouncedFetchSuggestions = debounce(async (query) => {
     try {
@@ -80,7 +79,9 @@ socket.on('ride-started', ride => {
           },
         }
       );
-      activeField === "pickup" ? setPickupSuggestions(response.data) : setDestinationSuggestions(response.data)
+      activeField === "pickup"
+        ? setPickupSuggestions(response.data)
+        : setDestinationSuggestions(response.data);
     } catch (error) {
       console.error(error.message);
     }
@@ -116,21 +117,21 @@ socket.on('ride-started', ride => {
 
   const submitHandlerGetFare = async (e) => {
     e.preventDefault();
-    if(pickup.trim() && destination.trim()){
+    if (pickup.trim() && destination.trim()) {
       try {
         const response = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
-          { 
-              pickup: pickup + ":" +pickupLatLon, 
-              destination: destination + ":" + destinationpLatLon 
+          {
+            pickup: pickup + ":" + pickupLatLon,
+            destination: destination + ":" + destinationpLatLon,
           },
-          { 
-              headers: { 
-                  Authorization: `Bearer ${localStorage.getItem("token")}` 
-              } 
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
         );
-        if(response.status === 200){
+        if (response.status === 200) {
           setPanelOpen(false);
           setVehiclePanelOpen(true);
           setFare(response.data);
@@ -143,27 +144,29 @@ socket.on('ride-started', ride => {
 
   const createRideHandler = async () => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, 
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/rides/create`,
         {
           pickup: `${pickup} :${pickupLatLon}`,
           destination: `${destination} :${destinationpLatLon}`,
-          vehicleType: vehicleType
-        }, 
+          vehicleType: vehicleType,
+        },
         {
-          headers: { 
-          Authorization:`Bearer ${localStorage.getItem("token")}`
-         }
-      })
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
-      if(response.status === 200){
-        console.log(response.data)
-      }else{
+      if (response.status === 200) {
+        // console.log(response.data)
+      } else {
         throw new Error("Create ride api fails");
       }
     } catch (error) {
       console.error(error.message);
     }
-  }
+  };
   useGSAP(
     function () {
       if (panelOpen) {
@@ -227,7 +230,7 @@ socket.on('ride-started', ride => {
         });
       } else {
         gsap.to(vehicleFoundRef.current, {
-          transform: "translateY(100%)",
+          transform: "translateY(110%)",
         });
       }
     },
@@ -265,7 +268,7 @@ socket.on('ride-started', ride => {
         />
       </div>
       <div className="flex flex-col justify-end h-screen absolute top-0 w-full">
-        <div className="h-[30%] p-6 bg-white relative">
+        <div className="h-[35%] p-6 bg-white relative">
           <h5
             ref={panelCloseRef}
             onClick={() => {
@@ -277,7 +280,7 @@ socket.on('ride-started', ride => {
           </h5>
           <h4 className="text-2xl font-semibold">Find a trip</h4>
           <form onSubmit={submitHandlerGetFare}>
-            <div className="line absolute h-16 w-1 top-[45%] left-10 bg-gray-700 rounded-full"></div>
+            <div className="line absolute h-16 w-1 top-[40%] left-10 bg-gray-700 rounded-full"></div>
             <input
               className="bg-[#eee] px-12 py-2 text-base rounded-lg w-full mt-5"
               type="text"
@@ -300,7 +303,13 @@ socket.on('ride-started', ride => {
               }}
               placeholder="Enter your destination"
             />
-            <button className={`bg-[#111] mt-3 text-white font-semibold rounded px-2 py-1 w-full text-lg placeholder:text-base focus:outline-none ${pickup && destination ? 'opacity-[1]' : 'opacity-[0.5]'}`}>Find a trip</button>
+            <button
+              className={`bg-[#111] mt-3 text-white font-semibold rounded px-2 py-1 w-full text-lg placeholder:text-base focus:outline-none ${
+                pickup && destination ? "opacity-[1]" : "opacity-[0.5]"
+              }`}
+            >
+              Find a trip
+            </button>
           </form>
         </div>
         <div ref={panelRef} className="location-panel h-0 bg-white">
@@ -349,17 +358,23 @@ socket.on('ride-started', ride => {
         ref={vehicleFoundRef}
         className="looking-driver fixed z-10 w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full"
       >
-        <LookingForDriver setVehicleFound={setVehicleFound}
+        <LookingForDriver
+          setVehicleFound={setVehicleFound}
           pickup={pickup}
           destination={destination}
           fare={fare}
-          vehicleType={vehicleType} />
+          vehicleType={vehicleType}
+        />
       </div>
       <div
         ref={waitingForDriverRef}
         className="waiting-driver fixed z-10 w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full"
       >
-        <WaitingForDriver setWaitingForDriver={setWaitingForDriver} />
+        <WaitingForDriver
+          setWaitingForDriver={setWaitingForDriver}
+          setRide={setRide}
+          ride={ride}
+        />
       </div>
     </div>
   );

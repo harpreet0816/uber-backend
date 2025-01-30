@@ -14,7 +14,6 @@ const LocationSearchPanel = ({ suggestions, setVehiclePanelOpen, setPanelOpen, s
       setPickupLatLon(`${suggestion.lat},${suggestion.lon}`)
     } else if (activeField === 'destination') {
       setDestination(suggestion.display_address);
-      console.log(suggestion, "Fs")
       setDestinationpLatLon(`${suggestion.lat},${suggestion.lon}`)
     }
   }
@@ -22,7 +21,7 @@ const LocationSearchPanel = ({ suggestions, setVehiclePanelOpen, setPanelOpen, s
   return (
     <div>
       {/* Display fetched suggestions */}
-
+      
       {suggestions.map((elem, idx) => {
         return (
           <div key={idx} onClick={()=> handleSuggestionClick(elem)} className="flex gap-4 border-2 p-2 rounded-xl border-gray-100 active:border-black items-center my-2 justify-start">

@@ -63,13 +63,64 @@ module.exports.getFare = async (req, res, next) => {
   const { pickup, destination } = req.body;
 
   try {
-    console.log("n");
     const ride = await rideService.getFare({
       pickup: pickup.split(":")[1],
       destination: destination.split(":")[1],
     });
     return res.status(200).json(ride);
   } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports.acceptRide = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { rideId} = req.body;
+
+  try {
+    const ride = await rideService.acceptRide({
+      rideId,
+      captain: req.captain,
+    });
+
+    sendMessageToSocketId(ride.user.socketId, {event: "ride-confirmed", data: ride});
+    
+    const rideCopy = JSON.parse(JSON.stringify(ride));
+
+    delete rideCopy.otp;
+
+    return res.status(200).json(rideCopy);
+  } catch (error) {
+    console.log(error.message)
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports.startRide = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { rideId, otp} = req.body;
+
+  try {
+
+    const ride = await rideService.startRide({
+      rideId,
+      otp,
+      captain: req.captain,
+    });
+   
+    sendMessageToSocketId(ride.user.socketId, {event: "ride-started", data: ride});
+
+    return res.status(200).json(ride);
+  } catch (error) {
+    console.log(error.message)
     return res.status(500).json({ message: error.message });
   }
 };

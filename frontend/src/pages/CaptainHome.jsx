@@ -7,6 +7,17 @@ import gsap from "gsap";
 import ConfirmRideCaptainPopup from "./components/ConfirmRideCaptainPopup";
 import { captainDataContext } from "../context/CaptainContext";
 import { SocketContext } from "../context/SocketContext";
+import axios from "axios";
+
+let timeoutId;
+function debounce(cb, delay) {
+  return function (...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      cb(...args);
+    }, delay);
+  };
+}
 
 const CaptainHome = () => {
   const [ridePopupPanel, setRidePopupPanel] = useState(false)
@@ -49,6 +60,61 @@ const CaptainHome = () => {
     })
     return () => clearInterval(locationInterval)
   }, []);
+
+  const debouncedWrapper = debounce((func)=>func() , 300);
+
+  const acceptRide = () => {
+      debouncedWrapper(async () => {
+        try {
+          const response = await axios.post(
+            `${import.meta.env.VITE_BASE_URL}/rides/accept-ride`,
+            {
+              rideId: ride._id,
+              captainId: captain._id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+
+          if(response.status === 200){
+            console.log(response, "s0f00")
+            setRidePopupPanel(false)
+            setConfirmRidePopupPanel(true)
+          }
+        } catch (error) {
+          console.error(error.message);
+        }
+      })
+  }
+
+  const startRide = (otp) => {
+      debouncedWrapper(async () => {
+        try {
+          const response = await axios.post(
+            `${import.meta.env.VITE_BASE_URL}/rides/start-ride`,
+            {
+              rideId: ride._id,
+              otp: otp,
+              captainId: captain._id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+
+          if(response.status === 200){
+            console.log(response.data, "start ride ")
+          }
+        } catch (error) {
+          console.error(error.message);
+        }
+      })
+  }
 
   useGSAP(
     function () {
@@ -105,11 +171,11 @@ const CaptainHome = () => {
         <CaptainDetails />
       </div>
       <div ref={ridePopupPanelRef} className="fixed z-10 w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full">
-           <RidePopup  setRidePopupPanel={setRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} ride={ride} setRide={setRide}/>
+           <RidePopup  setRidePopupPanel={setRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} ride={ride} setRide={setRide} acceptRide={acceptRide}/>
       </div>
       <div ref={confirmRidePopupPanelRef} className="fixed z-10 h-screen w-full bottom-0 bg-white px-3 py-6 pt-12 translate-y-full">
            <ConfirmRideCaptainPopup  
-           setRidePopupPanel={setRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} ride={ride} setRide={setRide} />
+           setRidePopupPanel={setRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} ride={ride} setRide={setRide} startRide={startRide}/>
       </div>
     </div>
   );

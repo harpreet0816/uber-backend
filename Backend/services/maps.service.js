@@ -165,7 +165,7 @@ module.exports.getCaptainsInTheRadius = async (ltd, lng, radius) => {
     })
     .exec();
 
-  console.log("Nearby captains:", captains[0]);
+  console.log("Nearby captains:", captains.length);
   return captains;
 };
 

@@ -1,5 +1,5 @@
 const RidePopup = ({ setRidePopupPanel, setConfirmRidePopupPanel, ride, 
-  setRide }) => {
+  setRide, acceptRide }) => {
 
   if(!ride) {return (<div>loading...</div>)}
   return (
@@ -43,9 +43,9 @@ const RidePopup = ({ setRidePopupPanel, setConfirmRidePopupPanel, ride,
               <i className="text-lg ri-map-pin-2-fill"></i>
             </h2>
             <div>
-              <h3 className="text-lg font-medium">{ride.destination.split(",")[0]}</h3>
+              <h3 className="text-lg font-medium">{ride?.destination.split(",")[0]}</h3>
               <p className="text-sm -mt-1 text-gray-600">
-              {ride.destination}
+              {ride?.destination}
               </p>
             </div>
           </div>
@@ -70,7 +70,8 @@ const RidePopup = ({ setRidePopupPanel, setConfirmRidePopupPanel, ride,
           </button>
           <button
             onClick={() => {
-              setConfirmRidePopupPanel(true);
+              setRidePopupPanel(false);
+              acceptRide()
             }}
             className="w-full bg-green-600 text-white font-semibold p-3 px-10 rounded-lg"
           >

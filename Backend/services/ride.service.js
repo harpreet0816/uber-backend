@@ -77,7 +77,7 @@ async function getFare({ pickup, destination }) {
       (distanceTime.duration.value / 60) * perMinuteRate.moto
     ).toFixed(2),
   };
-  return fare;
+  return {fare, distanceTime};
 }
 
 module.exports.getFare = getFare;
@@ -119,13 +119,15 @@ module.exports.createRide = async ({
     throw new Error("All feilds are required");
   }
 
-  const fare = await getFare({ pickup, destination });
+  const {fare, distanceTime} = await getFare({ pickup, destination });
 
   const ride = await rideModel.create({
     user,
     pickup: fullPickup,
     destination: fullDestination,
     fare: fare[vehicleType],
+    distance: distanceTime.distance.value/1000,
+    duration: distanceTime.duration.value/60,
     otp: getOtp(6),
   });
 
@@ -175,6 +177,29 @@ module.exports.startRide = async ({ rideId, otp, captain }) => {
     },
     {
       status: "ongoing",
+    },
+  { new: true }
+  ).populate("user").populate("captain");
+
+  if (!ride) {
+    throw new Error("Ride not found");
+  }
+  
+  return ride;
+};
+
+module.exports.endRide = async ({ rideId, captain }) => {
+  if (!rideId || !captain) {
+    throw new Error("All feilds are required");
+  }
+
+  const ride = await rideModel.findOneAndUpdate(
+    {
+      _id: rideId,
+      captain: captain._id,
+    },
+    {
+      status: "completed",
     },
   { new: true }
   ).populate("user").populate("captain");

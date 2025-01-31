@@ -63,11 +63,11 @@ module.exports.getFare = async (req, res, next) => {
   const { pickup, destination } = req.body;
 
   try {
-    const ride = await rideService.getFare({
+    const {fare} = await rideService.getFare({
       pickup: pickup.split(":")[1],
       destination: destination.split(":")[1],
     });
-    return res.status(200).json(ride);
+    return res.status(200).json(fare);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -117,6 +117,30 @@ module.exports.startRide = async (req, res, next) => {
     });
    
     sendMessageToSocketId(ride.user.socketId, {event: "ride-started", data: ride});
+
+    return res.status(200).json(ride);
+  } catch (error) {
+    console.log(error.message)
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports.endRide = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { rideId, otp} = req.body;
+
+  try {
+
+    const ride = await rideService.endRide({
+      rideId,
+      captain: req.captain,
+    });
+   
+    sendMessageToSocketId(ride.user.socketId, {event: "end-ride", data: ride});
 
     return res.status(200).json(ride);
   } catch (error) {

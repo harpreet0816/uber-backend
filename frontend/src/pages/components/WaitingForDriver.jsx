@@ -31,7 +31,9 @@ const WaitingForDriver = ({setWaitingForDriver, setRide, ride}) => {
             </h2>
             <div>
               <h3 className="text-lg font-medium">{ride?.pickup ? ride?.pickup.split(" ")[0] : "562/11-A"}</h3>
-              <p className="text-sm -mt-1 text-gray-600">
+              <p className="text-sm -mt-1 text-gray-600"
+              style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+              >
                 {ride?.pickup}
               </p>
             </div>
@@ -42,7 +44,9 @@ const WaitingForDriver = ({setWaitingForDriver, setRide, ride}) => {
             </h2>
             <div>
               <h3 className="text-lg font-medium">{ride?.destination ? ride?.destination.split(" ")[0] : "562/11-A"}</h3>
-              <p className="text-sm -mt-1 text-gray-600">
+              <p className="text-sm -mt-1 text-gray-600"
+              style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+              >
               {ride?.destination}
               </p>
             </div>

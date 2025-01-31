@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CaptainDetails from "./components/CaptainDetails";
 import RidePopup from "./components/RidePopup";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -26,6 +26,8 @@ const CaptainHome = () => {
   const ridePopupPanelRef = useRef(null);
   const confirmRidePopupPanelRef = useRef(null);
   const [ ride, setRide ] = useState(null)
+
+  const navigate = useNavigate();
 
   const { socket } = useContext(SocketContext);
   const { captain } = useContext(captainDataContext);
@@ -80,7 +82,6 @@ const CaptainHome = () => {
           );
 
           if(response.status === 200){
-            console.log(response, "s0f00")
             setRidePopupPanel(false)
             setConfirmRidePopupPanel(true)
           }
@@ -108,7 +109,10 @@ const CaptainHome = () => {
           );
 
           if(response.status === 200){
-            console.log(response.data, "start ride ")
+            // console.log(response.data, "start ride ");
+            setRide(response.data);
+            setConfirmRidePopupPanel(false);
+            navigate("/captain-riding", {state: {rideData: ride}})
           }
         } catch (error) {
           console.error(error.message);

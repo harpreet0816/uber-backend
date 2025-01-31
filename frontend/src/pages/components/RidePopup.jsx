@@ -23,7 +23,7 @@ const RidePopup = ({ setRidePopupPanel, setConfirmRidePopupPanel, ride,
           />
           <h2 className="text-lg font-medium">{ride.user.fullname.firstname + " " + ride.user.fullname.lastname}</h2>
         </div>
-        <h5 className="text-lg font-semibold">2.2 KM</h5>
+        <h5 className="text-lg font-semibold">{ride?.distance && parseInt(ride.distance)} KM</h5>
       </div>
       <div className="flex gap-2 flex-col justify-between items-center">
         <div className="w-full">
@@ -33,7 +33,8 @@ const RidePopup = ({ setRidePopupPanel, setConfirmRidePopupPanel, ride,
             </h2>
             <div>
               <h3 className="text-lg font-medium">{ride.pickup.split(",")[0]}</h3>
-              <p className="text-sm -mt-1 text-gray-600">
+              <p className="text-sm -mt-1 text-gray-600"
+              style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
               {ride.pickup}
               </p>
             </div>
@@ -44,7 +45,8 @@ const RidePopup = ({ setRidePopupPanel, setConfirmRidePopupPanel, ride,
             </h2>
             <div>
               <h3 className="text-lg font-medium">{ride?.destination.split(",")[0]}</h3>
-              <p className="text-sm -mt-1 text-gray-600">
+              <p className="text-sm -mt-1 text-gray-600"
+              style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
               {ride?.destination}
               </p>
             </div>

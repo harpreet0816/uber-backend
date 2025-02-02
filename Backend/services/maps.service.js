@@ -1,4 +1,5 @@
 const axios = require("axios");
+const captainModel = require("../models/captain.model.js");
 
 module.exports.getAddressCoordinate = async (address) => {
   const googleApiExist =
@@ -19,7 +20,6 @@ module.exports.getAddressCoordinate = async (address) => {
 
   try {
     if (googleApiExist) {
-      console.log("inn");
       const response = await axios.get(url);
       if (response.data.status === "OK") {
         const location = response.data.results[0].geometry.location;
@@ -93,7 +93,6 @@ module.exports.getDistanceTime = async (origin, destination) => {
           )
         )
       );
-      
       return results.length === 1 ? results[0] : results;
     }
   } catch (error) {
@@ -140,6 +139,33 @@ module.exports.getAutoCompleteSuggestions = async (input) => {
     console.error(error.message);
     throw error;
   }
+};
+
+module.exports.getCaptainsInTheRadius = async (ltd, lng, radius) => {
+  ltd = parseFloat(ltd);
+  lng = parseFloat(lng);
+  radiusInMeters = radius * 1000;
+
+  if (isNaN(ltd) || isNaN(lng)) {
+    throw new Error("Invalid latitude or longitude");
+  }
+
+  const captains = await captainModel
+    .find({
+      location: {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [lng, ltd], // [longitude, latitude]
+          },
+          $maxDistance: radiusInMeters, // Maximum distance in meters
+        },
+      },
+    })
+    .exec();
+
+  console.log("Nearby captains:", captains.length);
+  return captains;
 };
 
 module.exports.fetchTimeAndDistanceUsingOpenRouteService = async (
@@ -200,20 +226,20 @@ module.exports.fetchTimeAndDistanceUsingOpenRouteService = async (
     let time;
     if (R === 6371000) {
       // If the radius is in meters, calculate time in seconds (assume speed in m/s)
-      const averageSpeedInMetersPerSecond = 13.89; 
+      const averageSpeedInMetersPerSecond = 13.89;
       time = distance / averageSpeedInMetersPerSecond;
       return {
-        distance: {value: distance.toFixed(2)},
-        duration: {value: time.toFixed(2)},
+        distance: { value: distance.toFixed(2) },
+        duration: { value: time.toFixed(2) },
       };
     } else if (R === 6371) {
       // If the radius is in kilometers, calculate time in minutes (assume speed in km/h)
-      const averageSpeedInKilometersPerHour = 50; 
-      const timeInHours = distance / averageSpeedInKilometersPerHour; 
+      const averageSpeedInKilometersPerHour = 50;
+      const timeInHours = distance / averageSpeedInKilometersPerHour;
       time = timeInHours * 60;
       return {
-        distance: {value: distance.toFixed(2)},
-        duration: {value: time.toFixed(2)},
+        distance: { value: distance.toFixed(2) },
+        duration: { value: time.toFixed(2) },
       };
     }
   }

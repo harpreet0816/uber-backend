@@ -1,5 +1,20 @@
-import { Link } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { SocketContext } from "../context/SocketContext";
 const Riding = () => {
+  const location = useLocation();
+  const ride = location.state.rideData;
+
+  const navigate = useNavigate();
+
+  const {socket} = useContext(SocketContext);
+
+  useEffect(() => {
+    socket.on("end-ride", () => {
+      navigate("/home")
+    });
+  }, [])
+  
   return (
     <div className="h-screen">
         <Link to="/home" className="fixed right-2 top-2 h-10 w-10 bg-white flex items-center justify-center rounded-full">
@@ -20,9 +35,9 @@ const Riding = () => {
             alt="confirm ride vehicle"
           />
           <div className="text-right">
-            <h2 className="text-lg font-medium">Sarthak</h2>
-            <h4 className="text-xl font-semibold -mt-1 -mb-1">MP04 AB 1234</h4>
-            <p className="text-sm text-gray-600">Maruti Suzuki Alto</p>
+            <h2 className="text-lg font-medium">{ride?.captain?.fullname?.firstname}</h2>
+            <h4 className="text-xl font-semibold -mt-1 -mb-1">{ride?.captain?.vehicle?.plate}</h4>
+            <p className="text-sm text-gray-600">{ride?.captain?.vehicle?.vehicleType}</p>
           </div>
         </div>
         <div className="flex gap-2 flex-col justify-between items-center">
@@ -32,9 +47,10 @@ const Riding = () => {
                 <i className="text-lg ri-map-pin-2-fill"></i>
               </h2>
               <div>
-                <h3 className="text-lg font-medium">562/11-A</h3>
-                <p className="text-sm -mt-1 text-gray-600">
-                  Kankariya Talab, Bhopal
+                <h3 className="text-lg font-medium">{ride?.destination.split(" ")[0]}</h3>
+                <p className="text-sm -mt-1 text-gray-600"
+                style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {ride?.destination}
                 </p>
               </div>
             </div>
@@ -43,7 +59,7 @@ const Riding = () => {
                 <i className="text-lg ri-currency-line"></i>
               </h2>
               <div>
-                <h3 className="text-lg font-medium">₹193.20</h3>
+                <h3 className="text-lg font-medium">₹{ride?.fare}</h3>
                 <p className="text-sm -mt-1 text-gray-600">Cash Cash</p>
               </div>
             </div>

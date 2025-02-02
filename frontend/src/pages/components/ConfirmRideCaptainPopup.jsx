@@ -4,17 +4,27 @@ import { Link } from "react-router-dom";
 const ConfirmRideCaptainPopup = ({
   setRidePopupPanel,
   setConfirmRidePopupPanel,
+  ride, 
+  setRide,
+  startRide
 }) => {
 
   const [otp, setOtp] = useState("");
 
   const submitHandler = (e) => {
     e.preventDefault();
+    if(!otp || !parseInt(Math.abs(otp)) || otp.length != 6 ){
+      console.error(otp, "otp must be of 6 digits")
+      return;
+    }
+    startRide(otp)
   }
+  if(!ride) {return (<div>loading...</div>)}
   return (
     <div>
       <h5
         onClick={() => {
+          setRide(null);
           setRidePopupPanel(true);
           setConfirmRidePopupPanel(false);
         }}
@@ -32,9 +42,9 @@ const ConfirmRideCaptainPopup = ({
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0_hQThmfgUmHe2SM5q3kDe622hRHOBYPZlQ&s"
             alt="passenger poto"
           />
-          <h2 className="text-lg font-medium">Harsh Patel</h2>
+          <h2 className="text-lg font-medium">{ride.user.fullname.firstname + " " + ride.user.fullname.lastname}</h2>
         </div>
-        <h5 className="text-lg font-semibold">2.2 KM</h5>
+        <h5 className="text-lg font-semibold">{ride?.distance && parseInt(ride.distance)} KM</h5>
       </div>
       <div className="flex gap-2 flex-col justify-between items-center">
         <div className="w-full">
@@ -43,9 +53,10 @@ const ConfirmRideCaptainPopup = ({
               <i className="text-lg ri-map-pin-fill"></i>
             </h2>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
-              <p className="text-sm -mt-1 text-gray-600">
-                Kankariya Talab, Bhopal
+              <h3 className="text-lg font-medium">{ride.pickup.split(",")[0]}</h3>
+              <p className="text-sm -mt-1 text-gray-600"
+              style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                {ride.pickup}
               </p>
             </div>
           </div>
@@ -54,9 +65,10 @@ const ConfirmRideCaptainPopup = ({
               <i className="text-lg ri-map-pin-2-fill"></i>
             </h2>
             <div>
-              <h3 className="text-lg font-medium">562/11-A</h3>
-              <p className="text-sm -mt-1 text-gray-600">
-                Kankariya Talab, Bhopal
+              <h3 className="text-lg font-medium">{ride.destination.split(",")[0]}</h3>
+              <p className="text-sm -mt-1 text-gray-600"
+              style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+              {ride.destination}
               </p>
             </div>
           </div>
@@ -65,7 +77,7 @@ const ConfirmRideCaptainPopup = ({
               <i className="text-lg ri-currency-line"></i>
             </h2>
             <div>
-              <h3 className="text-lg font-medium">₹193.20</h3>
+              <h3 className="text-lg font-medium">₹{ride.fare}</h3>
               <p className="text-sm -mt-1 text-gray-600">Cash Cash</p>
             </div>
           </div>
@@ -83,7 +95,7 @@ const ConfirmRideCaptainPopup = ({
               className="bg-[#eee] px-6 py-4 font-mono text-lg rounded-lg w-full"
             />
             <Link
-              to="/captain-riding"
+              onClick={submitHandler}
               className="flex justify-center w-full mt-5 bg-green-600 text-white text-lg font-semibold p-3 rounded-lg"
             >
               Confirm
@@ -92,6 +104,7 @@ const ConfirmRideCaptainPopup = ({
               onClick={() => {
                 setConfirmRidePopupPanel(false);
                 setRidePopupPanel(false);
+                setRide(null)
               }}
               className="w-full mt-2 bg-red-500 text-white  font-semibold p-3 rounded-lg"
             >

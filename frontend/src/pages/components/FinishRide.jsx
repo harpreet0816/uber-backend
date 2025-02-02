@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-const FinishRide = ({setFinishRidePanel}) => {
+const FinishRide = ({setFinishRidePanel, ride, endRideHandler}) => {
 
   return (
     <div>
@@ -22,9 +22,9 @@ const FinishRide = ({setFinishRidePanel}) => {
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0_hQThmfgUmHe2SM5q3kDe622hRHOBYPZlQ&s"
           alt="passenger poto"
         />
-        <h2 className="text-lg font-medium">Harsh Patel</h2>
+        <h2 className="text-lg font-medium">{ride?.user?.fullname?.firstname}</h2>
       </div>
-      <h5 className="text-lg font-semibold">2.2 KM</h5>
+      <h5 className="text-lg font-semibold">{ride?.fare}</h5>
     </div>
     <div className="flex gap-2 flex-col justify-between items-center">
       <div className="w-full">
@@ -33,9 +33,11 @@ const FinishRide = ({setFinishRidePanel}) => {
             <i className="text-lg ri-map-pin-fill"></i>
           </h2>
           <div>
-            <h3 className="text-lg font-medium">562/11-A</h3>
-            <p className="text-sm -mt-1 text-gray-600">
-              Kankariya Talab, Bhopal
+            <h3 className="text-lg font-medium">{ride?.pickup.split(",")[0]}</h3>
+            <p className="text-sm -mt-1 text-gray-600"
+            style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+            >
+            {ride?.pickup}
             </p>
           </div>
         </div>
@@ -44,9 +46,11 @@ const FinishRide = ({setFinishRidePanel}) => {
             <i className="text-lg ri-map-pin-2-fill"></i>
           </h2>
           <div>
-            <h3 className="text-lg font-medium">562/11-A</h3>
-            <p className="text-sm -mt-1 text-gray-600">
-              Kankariya Talab, Bhopal
+            <h3 className="text-lg font-medium">{ride?.destination.split(",")[0]}</h3>
+            <p className="text-sm -mt-1 text-gray-600"
+            style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+            >
+            {ride?.destination}
             </p>
           </div>
         </div>
@@ -55,18 +59,18 @@ const FinishRide = ({setFinishRidePanel}) => {
             <i className="text-lg ri-currency-line"></i>
           </h2>
           <div>
-            <h3 className="text-lg font-medium">₹193.20</h3>
+            <h3 className="text-lg font-medium">₹{ride?.fare}</h3>
             <p className="text-sm -mt-1 text-gray-600">Cash Cash</p>
           </div>
         </div>
       </div>
       <div className="mt-10 w-full">
-          <Link
-            to="/captain-home"
+          <button
+            onClick={endRideHandler}
             className="text-lg flex justify-center w-full mt-5 bg-green-600 text-white font-semibold p-3 rounded-lg"
           >
             Finish Ride
-          </Link>
+          </button>
       </div>
     </div>
   </div>

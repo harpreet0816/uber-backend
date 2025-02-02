@@ -1,5 +1,5 @@
-const userModel = require("../Models/user.model.js");
-const blacklistTokenModel = require('../Models/blacklistToken.model.js')
+const userModel = require("../models/user.model.js");
+const blacklistTokenModel = require('../models/blacklistToken.model.js')
 const userService = require("../services/user.service.js");
 const { validationResult } = require("express-validator");
 
@@ -75,7 +75,7 @@ module.exports.loginUser = async (req, res, next) => {
 
 module.exports.getUserProfile = async (req, res, next) => {
   try {
-    res.status(200).json(req.user)
+    res.status(200).json({user: req.user})
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
